@@ -16,12 +16,17 @@
 <body>
     <h1>Word Bank Reader</h1>
 
-    <button onclick="readWords('Bronze')">Read Bronze Words</button>
-    <button onclick="readWords('Silver')">Read Silver Words</button>
-    <button onclick="readWords('Gold')">Read Gold Words</button>
-    <button onclick="showAnswer()">Show Answer</button>
+    <button onclick="selectLevel('Bronze')">Select Bronze Words</button>
+    <button onclick="selectLevel('Silver')">Select Silver Words</button>
+    <button onclick="selectLevel('Gold')">Select Gold Words</button>
+    <br>
+    <button onclick="startReading()">Start</button>
+    <button onclick="showAnswer()">Done</button>
+    <button onclick="nextWord()">Next</button>
 
     <div id="answer"></div>
+    <!-- 新增顯示當前單字索引和總數 -->
+    <div id="status"></div>
 
     <script>
         const wordBank = {
@@ -53,36 +58,50 @@
 
         let currentWord = '';
         let allWords = [];
+        let currentIndex = 0;
 
-        function readWords(level) {
-            let words = wordBank[level];
+        function selectLevel(level) {
 
-            // 随机排序并在每个单词前加上 "Hello, "
-            words = words
-                .sort(() => Math.random() - 0.5)
-                .map(sentence => `Hello, ${sentence}`);
+	    // 判斷操作系統是否為 Linux
+	    const isLinux = navigator.platform.includes('Linux');
+	    allWords = wordBank[level]
+		.sort(() => Math.random() - 0.5)
+		.map(sentence => isLinux ? `Hi, ${sentence}` : sentence); // Linux時加 "Hi, "
 
-            allWords = words; // 将处理后的所有单词保存
+	    currentIndex = 0;
+	    document.getElementById('answer').textContent = ''; // 清空顯示區
+	    updateStatus();
+        }
 
-            let index = 0;
-
-            function speakNextWord() {
-                if (index < words.length) {
-                    currentWord = words[index]; // 更新当前单词
-                    const speech = new SpeechSynthesisUtterance(currentWord);
-                    speech.rate = 1; // 调整速率
-                    window.speechSynthesis.speak(speech);
-                    setTimeout(speakNextWord, 8000 * speech.rate); // 每次朗读间隔15秒
-                    index++;
-                }
+        function startReading() {
+            if (allWords.length > 0 && currentIndex < allWords.length) {
+                currentWord = allWords[currentIndex];
+                const speech = new SpeechSynthesisUtterance(currentWord);
+                speech.rate = 0.75; // 調整速率
+                window.speechSynthesis.speak(speech);
+                updateStatus();
             }
-
-            speakNextWord();
         }
 
         function showAnswer() {
-            // 将所有处理后的单词列出
-            document.getElementById('answer').textContent = allWords.join('\n');
+            if (currentWord) {
+                document.getElementById('answer').textContent = currentWord;
+            }
+        }
+
+        function nextWord() {
+            if (currentIndex < allWords.length - 1) {
+                currentIndex++;
+                document.getElementById('answer').textContent = ''; // 清空顯示區
+                startReading(); // 自動讀下一個單字
+            } else {
+                document.getElementById('answer').textContent = 'No more words!';
+            }
+            updateStatus();
+        }
+
+        function updateStatus() {
+            document.getElementById('status').textContent = `Word ${currentIndex + 1} of ${allWords.length}`;
         }
     </script>
 </body>
