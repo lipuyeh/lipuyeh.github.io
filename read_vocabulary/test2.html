@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Bank Reader</title>
+    <style>
+        #answer {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            white-space: pre-wrap; /* 保持换行格式 */
+        }
+    </style>
+</head>
+<body>
+    <h1>Word Bank Reader</h1>
+
+    <button onclick="readWords('Bronze')">Read Bronze Words</button>
+    <button onclick="readWords('Silver')">Read Silver Words</button>
+    <button onclick="readWords('Gold')">Read Gold Words</button>
+    <button onclick="showAnswer()">Show Answer</button>
+
+    <div id="answer"></div>
+
+    <script>
+        const wordBank = {
+            Bronze: [
+                "surface", "remember", "produce", "victory", "defeat", "signal", 
+                "prepay", "battery", "nonstop", "curb", "return", "disagree", 
+                "search", "public", "cramped", "third", "primary", "common", 
+                "thirteen", "bunks", "imperfect", "impolite", "surprise", 
+                "control", "sample", "inspect", "incorrect", "fiction", 
+                "launch", "equal", "building", "rights", "ocean", "decks"
+            ],
+            Silver: [
+                "encourage", "lifeboats", "abandon", "motionless", "distinguished", 
+                "uttered", "chaos", "appeared", "indefinite", "shaky", "longingly", 
+                "swelling", "swallowing", "kayaks", "virtual", "stationary", "quilts", 
+                "stowed", "uneasy", "drifting", "uneasily", "secured", "glance", 
+                "exhaled", "sigh", "overturned", "muttered", "iceberg", "baseboards", 
+                "complain", "unmistakably", "disqualified", "hurried", "evacuate"
+            ],
+            Gold: [
+                "impossibility", "shakily", "lifeboats", "signal", "encourage", 
+                "architect", "designer", "familiarity", "evacuated", "personable", 
+                "generational", "hatchet", "patience", "unsecured", "station", 
+                "constructed", "swerve", "uncontrolled", "overcrowded", "grimaced", 
+                "exclaimed", "shook", "debris", "hatchet", "architect", "uneasily", 
+                "overturned", "impossible", "fiction", "launch", "sample", "evacuated"
+            ]
+        };
+
+        let currentWord = '';
+        let allWords = [];
+
+        function readWords(level) {
+            let words = wordBank[level];
+
+            // 随机排序并在每个单词前加上 "Hello, "
+            words = words
+                .sort(() => Math.random() - 0.5)
+                .map(sentence => `Hello, ${sentence}`);
+
+            allWords = words; // 将处理后的所有单词保存
+
+            let index = 0;
+
+            function speakNextWord() {
+                if (index < words.length) {
+                    currentWord = words[index]; // 更新当前单词
+                    const speech = new SpeechSynthesisUtterance(currentWord);
+                    speech.rate = 1; // 调整速率
+                    window.speechSynthesis.speak(speech);
+                    setTimeout(speakNextWord, 8000 * speech.rate); // 每次朗读间隔15秒
+                    index++;
+                }
+            }
+
+            speakNextWord();
+        }
+
+        function showAnswer() {
+            // 将所有处理后的单词列出
+            document.getElementById('answer').textContent = allWords.join('\n');
+        }
+    </script>
+</body>
+</html>
+
