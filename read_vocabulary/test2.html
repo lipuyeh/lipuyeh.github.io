@@ -22,9 +22,12 @@
 <body>
     <h1>Word Bank Reader</h1>
 
-    <button onclick="selectLevel('Bronze')">Select Bronze Words</button>
-    <button onclick="selectLevel('Silver')">Select Silver Words</button>
-    <button onclick="selectLevel('Gold')">Select Gold Words</button>
+    <button onclick="selectLevel('JBronze')">Select Jodie Bronze Words</button>
+    <button onclick="selectLevel('JSilver')">Select Jodie Silver Words</button>
+    <button onclick="selectLevel('JGold')">Select Jodie Gold Words</button>
+    <button onclick="selectLevel('ABronze')">Select Aray Bronze Words</button>
+    <button onclick="selectLevel('ASilver')">Select Aray Silver Words</button>
+    <button onclick="selectLevel('AGold')">Select Aray Gold Words</button>
     <br>
     <button onclick="startReading()">Start</button>
     <button onclick="showAnswer()">Answer</button>
@@ -36,7 +39,7 @@
 
     <script>
         const wordBank = {
-            Bronze: [
+            JBronze: [
                 "surface", "remember", "produce", "victory", "defeat", "signal", 
                 "prepay", "battery", "nonstop", "curb", "return", "disagree", 
                 "search", "public", "cramped", "third", "primary", "common", 
@@ -44,7 +47,7 @@
                 "control", "sample", "inspect", "incorrect", "fiction", 
                 "launch", "equal", "building", "rights", "ocean", "decks"
             ],
-            Silver: [
+            JSilver: [
                 "encourage", "lifeboats", "abandon", "motionless", "distinguished", 
                 "uttered", "chaos", "appeared", "indefinite", "shaky", "longingly", 
                 "swelling", "swallowing", "kayaks", "virtual", "stationary", "quilts", 
@@ -52,14 +55,33 @@
                 "exhaled", "sigh", "overturned", "muttered", "iceberg", "baseboards", 
                 "complain", "unmistakably", "disqualified", "hurried", "evacuate"
             ],
-            Gold: [
+            JGold: [
                 "impossibility", "shakily", "lifeboats", "signal", "encourage", 
                 "architect", "designer", "familiarity", "evacuated", "personable", 
                 "generational", "hatchet", "patience", "unsecured", "station", 
                 "constructed", "swerve", "uncontrolled", "overcrowded", "grimaced", 
                 "exclaimed", "shook", "debris", "hatchet", "architect", "uneasily", 
                 "overturned", "impossible", "fiction", "launch", "sample", "evacuated"
-            ]
+            ],
+	    ABronze: [
+                "his", "they", "see", "saw", "tag", "eggs", "bat", "frog", "can", 
+                "pond", "sat", "come", "fan", "tail", "sand", "jump", "wave", "seed", 
+                "look", "dirt", "safe", "what", "this", "left", "both", "hair", 
+                "right", "teeth", "help", "mask"         ],
+            ASilver: [
+                "group", "light", "appear", "until", "leaves", "sprout", "scatter", 
+                "block", "noise", "black", "street", "around", "think", "spins", 
+                "eagle", "mixer", "guard", "hungry", "hatch", "person", "winter", 
+                "plant", "house", "crash", "nature", "through", "boat", "little", 
+                "spring", "building"
+  	    ],
+	    AGold: [
+                "upstairs", "neighbor", "mutters", "apartment", "quiet", "together", 
+                "flashlight", "instrument", "hatches", "machine", "himself", 
+                "skipping", "breathe", "warmth", "shovel", "branches", "bulldozer", 
+                "develop", "crosswalk", "continue"
+	    ]
+
         };
 
         let currentWord = '';
