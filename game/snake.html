@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>貪食蛇遊戲</title>
+    <style>
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="2400" height="1600"></canvas>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const window_size = { width: 2400, height: 1600 };
+    const size = 40;
+    let snake_pos, snake_body, snake_direction, change_to, snake_score, numbers_eaten, numbers;
+
+    const colors = {
+        white: '#FFFFFF',
+        black: '#000000',
+        red: '#FF0000',
+        green: '#00FF00',
+        blue: '#0000FF'
+    };
+
+    function gameOver() {
+        let fontSize = 30;
+        function showGameOver() {
+            ctx.clearRect(0, 0, window_size.width, window_size.height);
+            ctx.fillStyle = colors.red;
+            ctx.font = `${fontSize}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText('Game Over', window_size.width / 2, window_size.height / 2);
+            fontSize += 5;
+            if (fontSize <= 150) {
+                setTimeout(showGameOver, 50);
+            } else {
+                waitingForRestart();
+            }
+        }
+        showGameOver();
+    }
+
+    function waitingForRestart() {
+        document.addEventListener('keydown', function handler(event) {
+            if (event.code === 'Space') {
+                document.removeEventListener('keydown', handler);
+                resetGame();
+                mainLoop();
+            }
+        });
+    }
+
+    function generateNumbers(snake_score, numbers, count = 10) {
+        while (numbers.length < count) {
+            const x = Math.floor(Math.random() * (window_size.width / size)) * size;
+            const y = Math.floor(Math.random() * (window_size.height / size)) * size;
+            const value = numbers.length < count - 1 ? Math.floor(Math.random() * (snake_score - 1)) + 1 : snake_score + Math.floor(Math.random() * 3) + 1;
+            if (!numbers.some(num => num[0] === x && num[1] === y) && !snake_body.some(segment => segment[0] === x && segment[1] === y)) {
+                numbers.push([x, y, value]);
+            }
+        }
+        return numbers;
+    }
+
+    function resetGame() {
+        snake_pos = [size * 3, size];
+        snake_body = [[size * 3, size], [size * 4, size]];
+        snake_direction = 'RIGHT';
+        change_to = snake_direction;
+        snake_score = 1;
+        numbers_eaten = 0;
+        numbers = generateNumbers(snake_score, []);
+    }
+
+    function mainLoop() {
+        document.addEventListener('keydown', changeDirection);
+        const gameInterval = setInterval(() => {
+            if (update() === false) {
+                clearInterval(gameInterval);
+                gameOver();
+            } else {
+                render();
+            }
+        }, 200);
+    }
+
+    function changeDirection(event) {
+        if (event.key === 'ArrowUp' && snake_direction !== 'DOWN') change_to = 'UP';
+        if (event.key === 'ArrowDown' && snake_direction !== 'UP') change_to = 'DOWN';
+        if (event.key === 'ArrowLeft' && snake_direction !== 'RIGHT') change_to = 'LEFT';
+        if (event.key === 'ArrowRight' && snake_direction !== 'LEFT') change_to = 'RIGHT';
+    }
+
+    function update() {
+        if (change_to === 'UP') snake_direction = 'UP';
+        if (change_to === 'DOWN') snake_direction = 'DOWN';
+        if (change_to === 'LEFT') snake_direction = 'LEFT';
+        if (change_to === 'RIGHT') snake_direction = 'RIGHT';
+
+        if (snake_direction === 'UP') snake_pos[1] -= size;
+        if (snake_direction === 'DOWN') snake_pos[1] += size;
+        if (snake_direction === 'LEFT') snake_pos[0] -= size;
+        if (snake_direction === 'RIGHT') snake_pos[0] += size;
+
+        snake_body.unshift([snake_pos[0], snake_pos[1]]);
+
+        let hit_number = false;
+        for (let i = 0; i < numbers.length; i++) {
+            const number = numbers[i];
+            if (snake_pos[0] === number[0] && snake_pos[1] === number[1]) {
+                hit_number = true;
+                if (snake_score >= number[2]) {
+                    snake_score += number[2];
+                    numbers.splice(i, 1);
+                    numbers = generateNumbers(snake_score, numbers);
+                    numbers_eaten += 1;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        if (!hit_number) {
+            snake_body.pop();
+        }
+
+        if (snake_pos[0] < 0 || snake_pos[0] >= window_size.width || snake_pos[1] < 0 || snake_pos[1] >= window_size.height || snake_body.slice(1).some(segment => segment[0] === snake_pos[0] && segment[1] === snake_pos[1])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function render() {
+        ctx.clearRect(0, 0, window_size.width, window_size.height);
+
+        // 繪製狀態欄
+        ctx.fillStyle = colors.blue;
+        ctx.fillRect(0, 0, window_size.width, size);
+        ctx.fillStyle = colors.white;
+        ctx.font = '30px Arial';
+        ctx.fillText(`numbers eaten: ${numbers_eaten}   snake: ${snake_score}`, 10, 30);
+
+        // 繪製蛇
+        snake_body.forEach(pos => {
+            ctx.fillStyle = colors.green;
+            ctx.fillRect(pos[0], pos[1], size, size);
+        });
+
+        // 繪製數字
+        numbers.forEach(number => {
+            ctx.fillStyle = colors.red;
+            ctx.fillRect(number[0], number[1], size, size);
+            ctx.fillStyle = colors.white;
+            ctx.font = '20px Arial';
+            ctx.fillText(number[2], number[0] + 5, number[1] + 25);
+        });
+
+        // 在蛇頭顯示分數
+        ctx.fillStyle = colors.black;
+        ctx.font = '20px Arial';
+        ctx.fillText(snake_score, snake_body[0][0] + 5, snake_body[0][1] + 25);
+    }
+
+    resetGame();
+    mainLoop();
+</script>
+</body>
+</html>
+
